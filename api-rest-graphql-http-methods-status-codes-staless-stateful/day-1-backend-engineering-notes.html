@@ -1,0 +1,1643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Day 1 Backend Engineering Notes</title>
+<style>
+:root{color-scheme:light;--fg:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0284c7;--accent-soft:#e0f2fe;--card:#ffffff;--code-bg:#0f172a;--code-fg:#e2e8f0;}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(180deg,#e0f2fe 0%,#f0f9ff 60%,#ffffff 100%);color:var(--fg);min-height:100vh;padding:32px 16px;line-height:1.75;-webkit-font-smoothing:antialiased}
+.page{max-width:920px;margin:0 auto}
+.doc{background:var(--card);border-radius:18px;box-shadow:0 20px 60px -20px rgba(2,132,199,.25),0 4px 14px -4px rgba(15,23,42,.08);padding:clamp(24px,5vw,60px);border:1px solid rgba(148,163,184,.2)}
+.title-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;margin:0 0 1.2em;padding-bottom:.5em;border-bottom:1px solid var(--border)}
+.title-row h1{margin:0;padding:0;border:0;flex:1 1 auto;min-width:0}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;border:1px solid rgba(2,132,199,.2);white-space:nowrap;transition:transform .15s ease,box-shadow .15s ease,background .15s ease;box-shadow:0 1px 2px rgba(2,132,199,.08);flex:0 0 auto;margin-left:auto;margin-right:8px}
+.badge:hover{background:#bae6fd;transform:translateY(-1px);box-shadow:0 6px 16px -6px rgba(2,132,199,.35)}
+h1,h2,h3,h4,h5,h6{font-weight:700;line-height:1.25;margin:1.8em 0 .6em;letter-spacing:-.01em}
+h1{font-size:2.15rem;border-bottom:1px solid var(--border);padding-bottom:.4em;margin-top:0}
+h2{font-size:1.6rem}
+h3{font-size:1.3rem}
+h4{font-size:1.1rem}
+p{margin:.9em 0}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+strong{font-weight:700}
+del{color:var(--muted)}
+ul,ol{margin:.8em 0;padding-left:1.6em}
+li{margin:.25em 0}
+blockquote{margin:1.2em 0;padding:.5em 1.1em;border-left:4px solid var(--accent);background:var(--accent-soft);color:#334155;border-radius:0 .5rem .5rem 0}
+hr{margin:2em 0;border:0;border-top:1px solid var(--border)}
+img{max-width:100%;border-radius:.5rem;margin:1em 0}
+code{font-family:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:.9em;padding:.15em .4em;background:#f1f5f9;color:#0c4a6e;border-radius:.35rem;border:1px solid var(--border)}
+pre{margin:1.2em 0;padding:1rem 1.1rem;background:var(--code-bg);color:var(--code-fg);border-radius:.7rem;overflow-x:auto;font-size:.9rem;line-height:1.55;border:1px solid #1e293b}
+pre code{background:transparent;border:0;padding:0;color:inherit;font-size:inherit}
+table{width:100%;border-collapse:separate;border-spacing:0;margin:1.2em 0;display:table;table-layout:auto;border:1px solid var(--border);border-radius:.6rem;overflow:hidden}
+thead{background:var(--accent-soft)}
+th,td{padding:.65em .9em;border-bottom:1px solid var(--border);text-align:left}
+th{font-weight:600}
+tr:last-child td{border-bottom:0}
+.callout{margin:1.5em 0;padding:1rem 1.1rem;border-radius:.8rem;border:1px solid var(--co-b,var(--border));background:var(--co-bg,#f8fafc);box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.callout-title{display:flex;align-items:center;gap:.55rem;font-weight:700;font-size:1rem;margin-bottom:.5rem;color:var(--co-fg,var(--fg))}
+.callout-icon{font-size:1.15rem;line-height:1}
+.callout-body>:first-child{margin-top:0}
+.callout-body>:last-child{margin-bottom:0}
+.callout-note{--co-bg:#eff6ff;--co-b:#bfdbfe;--co-fg:#1e40af}
+.callout-important{--co-bg:#faf5ff;--co-b:#e9d5ff;--co-fg:#6b21a8}
+.callout-warning{--co-bg:#fffbeb;--co-b:#fde68a;--co-fg:#92400e}
+.callout-tip{--co-bg:#ecfdf5;--co-b:#a7f3d0;--co-fg:#065f46}
+.callout-question{--co-bg:#ecfeff;--co-b:#a5f3fc;--co-fg:#155e75}
+.callout-observation{--co-bg:#f0fdfa;--co-b:#99f6e4;--co-fg:#115e59}
+.callout-complexity{--co-bg:#fef2f2;--co-b:#fecaca;--co-fg:#991b1b}
+.callout-summary{--co-bg:#eef2ff;--co-b:#c7d2fe;--co-fg:#3730a3}
+.callout-advantage{--co-bg:#ecfdf5;--co-b:#a7f3d0;--co-fg:#065f46}
+.callout-disadvantage{--co-bg:#fef2f2;--co-b:#fecaca;--co-fg:#991b1b}
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color:#94a3b8}
+.token.punctuation{color:#cbd5e1}
+.token.property,.token.tag,.token.constant,.token.symbol,.token.deleted{color:#fca5a5}
+.token.boolean,.token.number{color:#fdba74}
+.token.selector,.token.attr-name,.token.string,.token.char,.token.builtin,.token.inserted{color:#86efac}
+.token.operator,.token.entity,.token.url,.token.variable{color:#7dd3fc}
+.token.atrule,.token.attr-value,.token.function,.token.class-name{color:#f0abfc}
+.token.keyword{color:#c4b5fd}
+.token.regex,.token.important{color:#fcd34d}
+@media (max-width:640px){body{padding:12px 8px}.doc{padding:20px 16px;border-radius:12px}h1{font-size:1.7rem}.title-row{align-items:flex-start}.badge{font-size:12px;padding:5px 10px}}
+@media print{body{background:#fff;padding:0}.doc{box-shadow:none;border:0;padding:0;max-width:none}}
+</style>
+</head>
+<body>
+<main class="page"><article class="doc"><h1>Day 1 Backend Engineering Notes</h1>
+
+
+<hr>
+
+
+<h1>1. What is an API?</h1>
+
+
+<h2>Definition</h2>
+
+
+<p>An API (Application Programming Interface) is a contract that enables communication between different software systems through predefined request and response formats.</p>
+
+
+<hr>
+
+
+<h2>Why APIs Exist</h2>
+
+
+<p>APIs act as a bridge between clients and servers.</p>
+
+
+<p>Without APIs:</p>
+
+
+<pre class="language-text"><code class="language-text">Frontend → Database</code></pre>
+
+<p>Problems:</p>
+
+
+<ul>
+<li>Security risks</li>
+<li>No validation</li>
+<li>No authorization</li>
+<li>No business logic</li>
+</ul>
+
+
+<p>With APIs:</p>
+
+
+<pre class="language-text"><code class="language-text">Frontend
+    ↓
+API
+    ↓
+Backend
+    ↓
+Database</code></pre>
+
+<hr>
+
+
+<h2>API Request Flow</h2>
+
+
+<pre class="language-text"><code class="language-text">Client
+   ↓
+HTTP Request
+   ↓
+API Endpoint
+   ↓
+Business Logic
+   ↓
+Database
+   ↓
+Response
+   ↓
+Client</code></pre>
+
+<hr>
+
+
+<h2>API Contract</h2>
+
+
+<p>An API contract defines:</p>
+
+
+<ul>
+<li>Endpoint</li>
+<li>HTTP Method</li>
+<li>Request Format</li>
+<li>Response Format</li>
+</ul>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">GET /api/clubs/123</code></pre>
+
+<p>Response:</p>
+
+
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"clubName"</span><span class="token operator">:</span> <span class="token string">"Coding Club"</span>
+<span class="token punctuation">}</span></code></pre>
+
+<p>The client depends on the contract, not the backend implementation.</p>
+
+
+<hr>
+
+
+<h2>Key Terms</h2>
+
+
+<ul>
+<li>Client</li>
+<li>Server</li>
+<li>Endpoint</li>
+<li>Request</li>
+<li>Response</li>
+<li>Business Logic</li>
+<li>API Contract</li>
+</ul>
+
+
+<hr>
+
+
+<h1>2. REST vs GraphQL</h1>
+
+
+<h2>REST</h2>
+
+
+<p>REST (Representational State Transfer) is an architectural style for designing APIs.</p>
+
+
+<p>Resources are exposed through URLs and accessed using HTTP methods.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">GET /clubs
+GET /clubs/123
+POST /clubs
+DELETE /clubs/123</code></pre>
+
+<hr>
+
+
+<h2>Characteristics of REST</h2>
+
+
+<ul>
+<li>Multiple endpoints</li>
+<li>Resource-based URLs</li>
+<li>Uses standard HTTP methods</li>
+<li>Stateless communication</li>
+<li>Simpler to implement</li>
+</ul>
+
+
+<hr>
+
+
+<h2>Over-Fetching</h2>
+
+
+<p>Receiving more data than required.</p>
+
+
+<p>Example:</p>
+
+
+<p>Needed:</p>
+
+
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"santhosh"</span>
+<span class="token punctuation">}</span></code></pre>
+
+<p>Received:</p>
+
+
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"santhosh"</span><span class="token punctuation">,</span>
+  <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+  <span class="token property">"phone"</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+  <span class="token property">"address"</span><span class="token operator">:</span> <span class="token string">"..."</span>
+<span class="token punctuation">}</span></code></pre>
+
+<hr>
+
+
+<h2>Under-Fetching</h2>
+
+
+<p>A single endpoint doesn&#39;t provide enough data, requiring multiple API calls.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">GET /user/1
+GET /user/1/posts
+GET /user/1/followers</code></pre>
+
+<hr>
+
+
+<h2>GraphQL</h2>
+
+
+<p>GraphQL is a query language for APIs that allows clients to request exactly the fields they need.</p>
+
+
+<p>Example Query:</p>
+
+
+<pre class="language-graphql"><code class="language-graphql">{
+  user(id: 1) {
+    username
+    followers
+  }
+}</code></pre>
+
+<p>Response:</p>
+
+
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"data"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"user"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"santhosh"</span><span class="token punctuation">,</span>
+      <span class="token property">"followers"</span><span class="token operator">:</span> <span class="token number">1000</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+
+<hr>
+
+
+<h2>REST vs GraphQL</h2>
+
+
+<table>
+<thead>
+<tr>
+<th>REST</th>
+<th>GraphQL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Multiple endpoints</td>
+<td>Usually one endpoint</td>
+</tr>
+<tr>
+<td>Server defines response structure</td>
+<td>Client chooses fields</td>
+</tr>
+<tr>
+<td>Can over-fetch</td>
+<td>Reduces over-fetching</td>
+</tr>
+<tr>
+<td>Can under-fetch</td>
+<td>Reduces under-fetching</td>
+</tr>
+<tr>
+<td>Easier to implement</td>
+<td>More flexible</td>
+</tr>
+</tbody></table>
+
+
+<hr>
+
+
+<h2>Key Difference</h2>
+
+
+<p>REST defines fixed responses.</p>
+
+
+<p>GraphQL allows clients to select required fields.</p>
+
+
+<hr>
+
+
+<h1>3. HTTP Methods</h1>
+
+
+<p>HTTP methods define the action to perform on a resource.</p>
+
+
+<hr>
+
+
+<h2>GET</h2>
+
+
+<p>Purpose:</p>
+
+
+<p>Retrieve data.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">GET /clubs/101</code></pre>
+
+<p>Properties:</p>
+
+
+<ul>
+<li>Read-only</li>
+<li>Safe</li>
+<li>Idempotent</li>
+</ul>
+
+
+<hr>
+
+
+<h2>POST</h2>
+
+
+<p>Purpose:</p>
+
+
+<p>Create a new resource.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">POST /clubs</code></pre>
+
+<p>Properties:</p>
+
+
+<ul>
+<li>Creates new resources</li>
+<li>Not idempotent</li>
+</ul>
+
+
+<hr>
+
+
+<h2>PUT</h2>
+
+
+<p>Purpose:</p>
+
+
+<p>Replace an entire resource.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">PUT /clubs/101</code></pre>
+
+<p>Properties:</p>
+
+
+<ul>
+<li>Replaces complete resource</li>
+<li>Idempotent</li>
+</ul>
+
+
+<hr>
+
+
+<h2>PATCH</h2>
+
+
+<p>Purpose:</p>
+
+
+<p>Update specific fields.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">PATCH /clubs/101</code></pre>
+
+<p>Properties:</p>
+
+
+<ul>
+<li>Partial updates</li>
+<li>May be idempotent depending on implementation</li>
+</ul>
+
+
+<hr>
+
+
+<h2>DELETE</h2>
+
+
+<p>Purpose:</p>
+
+
+<p>Remove a resource.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">DELETE /clubs/101</code></pre>
+
+<p>Properties:</p>
+
+
+<ul>
+<li>Deletes resource</li>
+<li>Idempotent</li>
+</ul>
+
+
+<hr>
+
+
+<h2>Safe Methods</h2>
+
+
+<p>Methods that do not modify server state.</p>
+
+
+<pre class="language-text"><code class="language-text">GET</code></pre>
+
+<hr>
+
+
+<h2>Idempotent Methods</h2>
+
+
+<p>Multiple identical requests produce the same final result.</p>
+
+
+<pre class="language-text"><code class="language-text">GET
+PUT
+DELETE</code></pre>
+
+<p>PATCH may or may not be idempotent depending on implementation.</p>
+
+
+<p>POST is not idempotent.</p>
+
+
+<hr>
+
+
+<div class="callout callout-summary"><div class="callout-title"><span class="callout-icon">📌</span><span>Summary</span></div><div class="callout-body"><pre class="language-text"><code class="language-text">GET    → Read
+POST   → Create
+PUT    → Replace
+PATCH  → Partial Update
+DELETE → Remove</code></pre><hr>
+</div></div>
+<h1>4. HTTP Status Codes</h1>
+
+
+<p>HTTP status codes indicate the outcome of an HTTP request.</p>
+
+
+<hr>
+
+
+<h2>Categories</h2>
+
+
+<h3>2xx</h3>
+
+
+<p>Success</p>
+
+
+<h3>4xx</h3>
+
+
+<p>Client Error</p>
+
+
+<h3>5xx</h3>
+
+
+<p>Server Error</p>
+
+
+<hr>
+
+
+<h2>200 OK</h2>
+
+
+<p>Request processed successfully.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">GET /clubs/101</code></pre>
+
+<hr>
+
+
+<h2>201 Created</h2>
+
+
+<p>Resource created successfully.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">POST /clubs</code></pre>
+
+<hr>
+
+
+<h2>204 No Content</h2>
+
+
+<p>Request succeeded but no response body is returned.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">DELETE /clubs/101</code></pre>
+
+<hr>
+
+
+<h2>400 Bad Request</h2>
+
+
+<p>Client sent invalid data.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"invalid-email"</span>
+<span class="token punctuation">}</span></code></pre>
+
+<hr>
+
+
+<h2>401 Unauthorized</h2>
+
+
+<p>User is not authenticated.</p>
+
+
+<p>Example:</p>
+
+
+<ul>
+<li>Missing JWT</li>
+<li>Invalid JWT</li>
+</ul>
+
+
+<p>Meaning:</p>
+
+
+<pre class="language-text"><code class="language-text">Who are you?</code></pre>
+
+<hr>
+
+
+<h2>403 Forbidden</h2>
+
+
+<p>User is authenticated but lacks permission.</p>
+
+
+<p>Example:</p>
+
+
+<p>Student accessing admin API.</p>
+
+
+<p>Meaning:</p>
+
+
+<pre class="language-text"><code class="language-text">I know who you are,
+but access is denied.</code></pre>
+
+<hr>
+
+
+<h2>404 Not Found</h2>
+
+
+<p>Requested resource does not exist.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">GET /clubs/99999</code></pre>
+
+<hr>
+
+
+<h2>409 Conflict</h2>
+
+
+<p>Request conflicts with current system state.</p>
+
+
+<p>Examples:</p>
+
+
+<ul>
+<li>Duplicate email</li>
+<li>Duplicate username</li>
+<li>Duplicate club code</li>
+</ul>
+
+
+<hr>
+
+
+<h2>500 Internal Server Error</h2>
+
+
+<p>Unexpected server-side failure.</p>
+
+
+<p>Examples:</p>
+
+
+<ul>
+<li>Database down</li>
+<li>Unhandled exception</li>
+<li>Server crash</li>
+</ul>
+
+
+<hr>
+
+
+<h2>Quick Memory Trick</h2>
+
+
+<pre class="language-text"><code class="language-text">2xx → Success
+
+4xx → Client Mistake
+
+5xx → Server Mistake</code></pre>
+
+<hr>
+
+
+<h1>5. Stateless vs Stateful APIs</h1>
+
+
+<h2>State</h2>
+
+
+<p>State is information remembered about previous interactions.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-text"><code class="language-text">User: Santhosh
+Role: Student
+Logged In: Yes</code></pre>
+
+<hr>
+
+
+<h2>Stateful APIs</h2>
+
+
+<p>A stateful API stores client-specific information between requests.</p>
+
+
+<p>Example:</p>
+
+
+<p>Session Authentication.</p>
+
+
+<p>Server stores:</p>
+
+
+<pre class="language-text"><code class="language-text">Session ID
+User ID
+Role
+Login State</code></pre>
+
+<p>Future requests depend on stored session data.</p>
+
+
+<hr>
+
+
+<h2>Stateful Flow</h2>
+
+
+<pre class="language-text"><code class="language-text">Client
+   ↓
+Login
+   ↓
+Server
+   ↓
+Session Created</code></pre>
+
+<p>Subsequent requests:</p>
+
+
+<pre class="language-text"><code class="language-text">Client
+   ↓
+Session ID
+   ↓
+Server
+   ↓
+Session Lookup</code></pre>
+
+<hr>
+
+
+<h2>Stateless APIs</h2>
+
+
+<p>A stateless API does not store client-specific state between requests.</p>
+
+
+<p>Each request contains all information required for processing.</p>
+
+
+<p>Example:</p>
+
+
+<p>JWT Authentication.</p>
+
+
+<hr>
+
+
+<h2>Stateless Flow</h2>
+
+
+<pre class="language-text"><code class="language-text">Client
+   ↓
+JWT Token
+   ↓
+Server
+   ↓
+Verify Token
+   ↓
+Process Request</code></pre>
+
+<p>No session lookup required.</p>
+
+
+<hr>
+
+
+<h2>Easy Memory Trick</h2>
+
+
+<pre class="language-text"><code class="language-text">Stateful
+=
+Server Remembers</code></pre>
+
+<pre class="language-text"><code class="language-text">Stateless
+=
+Client Reminds</code></pre>
+
+<hr>
+
+
+<h2>Why REST is Stateless</h2>
+
+
+<p>REST requires every request to contain all information necessary for processing.</p>
+
+
+<p>Requests should be independent.</p>
+
+
+<hr>
+
+
+<h2>Why Stateless APIs Scale Better</h2>
+
+
+<p>Consider:</p>
+
+
+<pre class="language-text"><code class="language-text">Load Balancer
+      ↓
+Server A
+Server B
+Server C</code></pre>
+
+<p>Stateful Problem:</p>
+
+
+<pre class="language-text"><code class="language-text">Session stored on Server A
+Request goes to Server B</code></pre>
+
+<p>Server B cannot access session.</p>
+
+
+<p>Solutions:</p>
+
+
+<ul>
+<li>Sticky Sessions</li>
+<li>Shared Session Store</li>
+</ul>
+
+
+<p>Adds complexity.</p>
+
+
+<hr>
+
+
+<p>Stateless Advantage:</p>
+
+
+<p>Every request contains JWT.</p>
+
+
+<p>Any server can process the request.</p>
+
+
+<p>Benefits:</p>
+
+
+<ul>
+<li>Easier load balancing</li>
+<li>Easier horizontal scaling</li>
+<li>No session dependency</li>
+</ul>
+
+
+<hr>
+
+
+<h2>Session vs JWT</h2>
+
+
+<table>
+<thead>
+<tr>
+<th>Session</th>
+<th>JWT</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Stateful</td>
+<td>Stateless</td>
+</tr>
+<tr>
+<td>Server stores session</td>
+<td>Client stores token</td>
+</tr>
+<tr>
+<td>Requires session lookup</td>
+<td>No session lookup</td>
+</tr>
+<tr>
+<td>Harder to scale</td>
+<td>Easier to scale</td>
+</tr>
+</tbody></table>
+
+
+<hr>
+
+
+<h2>Key Terms</h2>
+
+
+<ul>
+<li>State</li>
+<li>Session</li>
+<li>JWT</li>
+<li>Stateless</li>
+<li>Stateful</li>
+<li>Load Balancer</li>
+<li>Horizontal Scaling</li>
+<li>Sticky Sessions</li>
+<li>Session Store</li>
+</ul>
+
+
+<hr>
+
+
+<h1>Day 1 One-Line Revision</h1>
+
+
+<h3>API</h3>
+
+
+<p>A contract that enables communication between software systems.</p>
+
+
+<h3>REST vs GraphQL</h3>
+
+
+<p>REST provides predefined responses; GraphQL lets clients request exactly the fields they need.</p>
+
+
+<h3>HTTP Methods</h3>
+
+
+<p>GET → Read, POST → Create, PUT → Replace, PATCH → Partial Update, DELETE → Remove.</p>
+
+
+<h3>HTTP Status Codes</h3>
+
+
+<p>2xx Success, 4xx Client Error, 5xx Server Error.</p>
+
+
+<h3>Stateful vs Stateless</h3>
+
+
+<p>Stateful APIs store client state on the server; stateless APIs require each request to carry all necessary information. 🚀</p>
+
+
+<p>Perfect. Since you&#39;re preparing for placements and backend interviews, I&#39;ll give questions that are actually asked, along with answers that are:</p>
+
+
+<p>✅ Technically correct
+✅ Easy to remember
+✅ Not overly fancy
+✅ Suitable for a fresher/SDE-1 interview</p>
+
+
+<hr>
+
+
+<h1>1. What is an API?</h1>
+
+
+<h3>Q1. What is an API?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>An API (Application Programming Interface) is a contract that allows different software systems to communicate with each other. A client sends a request to an API endpoint, and the server processes the request and returns a response.</p>
+
+
+<hr>
+
+
+<h3>Q2. Why do we need APIs?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>APIs provide a secure and structured way for clients to interact with backend services. They help separate the frontend from the backend and allow validation, authentication, authorization, and business logic to be applied before accessing data.</p>
+
+
+<hr>
+
+
+<h3>Q3. What is an API endpoint?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>An endpoint is a specific URL through which a client accesses a resource or service.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-http"><code class="language-http">GET /api/users/101</code></pre>
+
+<p>Here <code>/api/users/101</code> is the endpoint.</p>
+
+
+<hr>
+
+
+<h3>Q4. What is an API contract?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>An API contract is the agreement between the client and server that defines the endpoint, HTTP method, request format, and response structure that both sides must follow.</p>
+
+
+<hr>
+
+
+<h3>Q5. Can two backend services communicate using APIs?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>Yes. APIs are not limited to frontend-backend communication. Backend services can also communicate with each other through APIs.</p>
+
+
+<hr>
+
+
+<h3>Q6. Why shouldn&#39;t the frontend access the database directly?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>Direct database access exposes credentials and creates security risks. The backend API acts as a controlled layer where validation, authentication, authorization, and business rules can be enforced.</p>
+
+
+<hr>
+
+
+<h3>Q7. What happens internally when an API is called?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>The client sends an HTTP request to an API endpoint. The backend processes the request, executes business logic, interacts with the database if needed, and returns a response to the client.</p>
+
+
+<hr>
+
+
+<h3>Q8. What formats can APIs return?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>APIs can return JSON, XML, HTML, images, or files. JSON is the most commonly used format in modern applications.</p>
+
+
+<hr>
+
+
+<h3>Q9. Is an API the same as a REST API?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>No. API is a general concept for communication between systems. REST API is one specific way of designing APIs.</p>
+
+
+<hr>
+
+
+<h3>Q10. What are the main components of an API request?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>An API request typically consists of an endpoint, HTTP method, headers, query parameters, request body, and authentication information.</p>
+
+
+<hr>
+
+
+<h1>2. REST vs GraphQL</h1>
+
+
+<h3>Q1. What is REST?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>REST is an architectural style for designing APIs where resources are accessed through URLs and standard HTTP methods such as GET, POST, PUT, and DELETE.</p>
+
+
+<hr>
+
+
+<h3>Q2. What is GraphQL?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>GraphQL is a query language for APIs that allows clients to request exactly the data they need from the server.</p>
+
+
+<hr>
+
+
+<h3>Q3. What is the main difference between REST and GraphQL?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>In REST, the server defines the response structure through predefined endpoints. In GraphQL, the client specifies exactly which fields it wants to receive.</p>
+
+
+<hr>
+
+
+<h3>Q4. What is over-fetching?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>Over-fetching occurs when the server returns more data than the client actually needs.</p>
+
+
+<hr>
+
+
+<h3>Q5. What is under-fetching?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>Under-fetching occurs when a client must make multiple API requests to gather all the required data.</p>
+
+
+<hr>
+
+
+<h3>Q6. Why does GraphQL reduce over-fetching?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>GraphQL allows clients to request only the required fields, so unnecessary data is not included in the response.</p>
+
+
+<hr>
+
+
+<h3>Q7. Why does GraphQL reduce under-fetching?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>GraphQL allows related data to be fetched in a single query, reducing the need for multiple API requests.</p>
+
+
+<hr>
+
+
+<h3>Q8. Why is REST easier to maintain?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>REST uses predictable URLs and predefined responses, making APIs simpler to understand, test, and maintain.</p>
+
+
+<hr>
+
+
+<h3>Q9. When would you choose REST?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>REST is a good choice when data requirements are predictable and simplicity is preferred.</p>
+
+
+<hr>
+
+
+<h3>Q10. When would you choose GraphQL?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>GraphQL is useful when different clients require different subsets of data or when minimizing API requests is important.</p>
+
+
+<hr>
+
+
+<h1>3. HTTP Methods</h1>
+
+
+<h3>Q1. What is the purpose of HTTP methods?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>HTTP methods indicate the action a client wants to perform on a resource, such as reading, creating, updating, or deleting data.</p>
+
+
+<hr>
+
+
+<h3>Q2. What is GET used for?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>GET is used to retrieve data from the server without modifying it.</p>
+
+
+<hr>
+
+
+<h3>Q3. What is POST used for?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>POST is used to create new resources on the server.</p>
+
+
+<hr>
+
+
+<h3>Q4. What is PUT used for?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>PUT is used to replace an entire resource with new data.</p>
+
+
+<hr>
+
+
+<h3>Q5. What is PATCH used for?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>PATCH is used to update only specific fields of an existing resource.</p>
+
+
+<hr>
+
+
+<h3>Q6. What is DELETE used for?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>DELETE is used to remove a resource from the server.</p>
+
+
+<hr>
+
+
+<h3>Q7. What is the difference between PUT and PATCH?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>PUT replaces the complete resource, whereas PATCH updates only selected fields.</p>
+
+
+<hr>
+
+
+<h3>Q8. Why should GET not modify data?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>GET is designed to be a safe, read-only operation. Browsers, caches, and crawlers assume GET requests do not change server state.</p>
+
+
+<hr>
+
+
+<h3>Q9. What is an idempotent method?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>An idempotent method produces the same final result even if the same request is sent multiple times.</p>
+
+
+<hr>
+
+
+<h3>Q10. Which HTTP methods are idempotent?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>GET, PUT, and DELETE are generally idempotent. POST is not idempotent because it can create new resources each time it is called.</p>
+
+
+<hr>
+
+
+<h1>4. HTTP Status Codes</h1>
+
+
+<h3>Q1. Why do we use HTTP status codes?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>HTTP status codes inform the client about the outcome of a request and whether it was successful or failed.</p>
+
+
+<hr>
+
+
+<h3>Q2. What does 200 OK mean?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>200 OK indicates that the request was processed successfully.</p>
+
+
+<hr>
+
+
+<h3>Q3. What does 201 Created mean?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>201 Created indicates that a new resource was successfully created.</p>
+
+
+<hr>
+
+
+<h3>Q4. What does 400 Bad Request mean?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>400 Bad Request indicates that the client sent invalid or malformed data.</p>
+
+
+<hr>
+
+
+<h3>Q5. What does 401 Unauthorized mean?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>401 Unauthorized means the user has not been authenticated or provided valid credentials.</p>
+
+
+<hr>
+
+
+<h3>Q6. What does 403 Forbidden mean?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>403 Forbidden means the user is authenticated but does not have permission to access the resource.</p>
+
+
+<hr>
+
+
+<h3>Q7. Difference between 401 and 403?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>401 is an authentication issue, while 403 is an authorization issue.</p>
+
+
+<hr>
+
+
+<h3>Q8. What does 404 Not Found mean?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>404 Not Found indicates that the requested resource does not exist on the server.</p>
+
+
+<hr>
+
+
+<h3>Q9. What does 409 Conflict mean?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>409 Conflict indicates that the request conflicts with the current state of the system, such as creating a duplicate email.</p>
+
+
+<hr>
+
+
+<h3>Q10. What does 500 Internal Server Error mean?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>500 Internal Server Error indicates an unexpected problem occurred on the server while processing the request.</p>
+
+
+<hr>
+
+
+<h1>5. Stateless vs Stateful APIs</h1>
+
+
+<h3>Q1. What is state?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>State is information remembered about previous interactions that can be used while processing future requests.</p>
+
+
+<hr>
+
+
+<h3>Q2. What is a stateful API?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>A stateful API stores client-specific information on the server between requests.</p>
+
+
+<hr>
+
+
+<h3>Q3. What is a stateless API?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>A stateless API does not store client-specific information between requests. Each request contains all information needed for processing.</p>
+
+
+<hr>
+
+
+<h3>Q4. Why is session authentication stateful?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>Session authentication is stateful because the server stores session information and uses it to identify users in future requests.</p>
+
+
+<hr>
+
+
+<h3>Q5. Why is JWT authentication stateless?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>JWT authentication is stateless because the server does not store session data. The client sends the token with every request.</p>
+
+
+<hr>
+
+
+<h3>Q6. Why are REST APIs considered stateless?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>REST requires each request to contain all information necessary for processing, making requests independent of one another.</p>
+
+
+<hr>
+
+
+<h3>Q7. Why are stateless APIs easier to scale?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>Stateless APIs allow any server instance to process a request because no session data is stored on a specific server.</p>
+
+
+<hr>
+
+
+<h3>Q8. What is a sticky session?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>A sticky session ensures that requests from a user are always routed to the same server instance that holds their session data.</p>
+
+
+<hr>
+
+
+<h3>Q9. What is a session store?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>A session store is a centralized storage system used to maintain session data across multiple servers.</p>
+
+
+<hr>
+
+
+<h3>Q10. What is the main difference between session-based authentication and JWT authentication?</h3>
+
+
+<p><strong>Answer:</strong></p>
+
+
+<p>Session-based authentication stores user state on the server, whereas JWT authentication stores authentication information in a token sent with each request.</p>
+
+
+<hr>
+
+
+<p>These <strong>50 questions</strong> are enough to confidently handle most fresher-level interview discussions on Day 1 topics. If you can answer them naturally without memorizing word-for-word, you&#39;ll be in very good shape for backend interviews. 🚀</p>
+
+</article></main>
+</body>
+</html>
