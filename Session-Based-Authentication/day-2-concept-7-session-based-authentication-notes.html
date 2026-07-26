@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Day 2 — Concept 7: Session-Based Authentication Notes</title>
+<style>
+:root{color-scheme:light;--fg:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0284c7;--accent-soft:#e0f2fe;--card:#ffffff;--code-bg:#0f172a;--code-fg:#e2e8f0;}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(180deg,#e0f2fe 0%,#f0f9ff 60%,#ffffff 100%);color:var(--fg);min-height:100vh;padding:32px 16px;line-height:1.75;-webkit-font-smoothing:antialiased}
+.page{max-width:920px;margin:0 auto}
+.doc{background:var(--card);border-radius:18px;box-shadow:0 20px 60px -20px rgba(2,132,199,.25),0 4px 14px -4px rgba(15,23,42,.08);padding:clamp(24px,5vw,60px);border:1px solid rgba(148,163,184,.2)}
+.title-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;margin:0 0 1.2em;padding-bottom:.5em;border-bottom:1px solid var(--border)}
+.title-row h1{margin:0;padding:0;border:0;flex:1 1 auto;min-width:0}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;border:1px solid rgba(2,132,199,.2);white-space:nowrap;transition:transform .15s ease,box-shadow .15s ease,background .15s ease;box-shadow:0 1px 2px rgba(2,132,199,.08);flex:0 0 auto;margin-left:auto;margin-right:8px}
+.badge:hover{background:#bae6fd;transform:translateY(-1px);box-shadow:0 6px 16px -6px rgba(2,132,199,.35)}
+h1,h2,h3,h4,h5,h6{font-weight:700;line-height:1.25;margin:1.8em 0 .6em;letter-spacing:-.01em}
+h1{font-size:2.15rem;border-bottom:1px solid var(--border);padding-bottom:.4em;margin-top:0}
+h2{font-size:1.6rem}
+h3{font-size:1.3rem}
+h4{font-size:1.1rem}
+p{margin:.9em 0}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+strong{font-weight:700}
+del{color:var(--muted)}
+ul,ol{margin:.8em 0;padding-left:1.6em}
+li{margin:.25em 0}
+blockquote{margin:1.2em 0;padding:.5em 1.1em;border-left:4px solid var(--accent);background:var(--accent-soft);color:#334155;border-radius:0 .5rem .5rem 0}
+hr{margin:2em 0;border:0;border-top:1px solid var(--border)}
+img{max-width:100%;border-radius:.5rem;margin:1em 0}
+code{font-family:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:.9em;padding:.15em .4em;background:#f1f5f9;color:#0c4a6e;border-radius:.35rem;border:1px solid var(--border)}
+pre{margin:1.2em 0;padding:1rem 1.1rem;background:var(--code-bg);color:var(--code-fg);border-radius:.7rem;overflow-x:auto;font-size:.9rem;line-height:1.55;border:1px solid #1e293b}
+pre code{background:transparent;border:0;padding:0;color:inherit;font-size:inherit}
+table{width:100%;border-collapse:separate;border-spacing:0;margin:1.2em 0;display:table;table-layout:auto;border:1px solid var(--border);border-radius:.6rem;overflow:hidden}
+thead{background:var(--accent-soft)}
+th,td{padding:.65em .9em;border-bottom:1px solid var(--border);text-align:left}
+th{font-weight:600}
+tr:last-child td{border-bottom:0}
+.callout{margin:1.5em 0;padding:1rem 1.1rem;border-radius:.8rem;border:1px solid var(--co-b,var(--border));background:var(--co-bg,#f8fafc);box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.callout-title{display:flex;align-items:center;gap:.55rem;font-weight:700;font-size:1rem;margin-bottom:.5rem;color:var(--co-fg,var(--fg))}
+.callout-icon{font-size:1.15rem;line-height:1}
+.callout-body>:first-child{margin-top:0}
+.callout-body>:last-child{margin-bottom:0}
+.callout-note{--co-bg:#eff6ff;--co-b:#bfdbfe;--co-fg:#1e40af}
+.callout-important{--co-bg:#faf5ff;--co-b:#e9d5ff;--co-fg:#6b21a8}
+.callout-warning{--co-bg:#fffbeb;--co-b:#fde68a;--co-fg:#92400e}
+.callout-tip{--co-bg:#ecfdf5;--co-b:#a7f3d0;--co-fg:#065f46}
+.callout-question{--co-bg:#ecfeff;--co-b:#a5f3fc;--co-fg:#155e75}
+.callout-observation{--co-bg:#f0fdfa;--co-b:#99f6e4;--co-fg:#115e59}
+.callout-complexity{--co-bg:#fef2f2;--co-b:#fecaca;--co-fg:#991b1b}
+.callout-summary{--co-bg:#eef2ff;--co-b:#c7d2fe;--co-fg:#3730a3}
+.callout-advantage{--co-bg:#ecfdf5;--co-b:#a7f3d0;--co-fg:#065f46}
+.callout-disadvantage{--co-bg:#fef2f2;--co-b:#fecaca;--co-fg:#991b1b}
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color:#94a3b8}
+.token.punctuation{color:#cbd5e1}
+.token.property,.token.tag,.token.constant,.token.symbol,.token.deleted{color:#fca5a5}
+.token.boolean,.token.number{color:#fdba74}
+.token.selector,.token.attr-name,.token.string,.token.char,.token.builtin,.token.inserted{color:#86efac}
+.token.operator,.token.entity,.token.url,.token.variable{color:#7dd3fc}
+.token.atrule,.token.attr-value,.token.function,.token.class-name{color:#f0abfc}
+.token.keyword{color:#c4b5fd}
+.token.regex,.token.important{color:#fcd34d}
+@media (max-width:640px){body{padding:12px 8px}.doc{padding:20px 16px;border-radius:12px}h1{font-size:1.7rem}.title-row{align-items:flex-start}.badge{font-size:12px;padding:5px 10px}}
+@media print{body{background:#fff;padding:0}.doc{box-shadow:none;border:0;padding:0;max-width:none}}
+</style>
+</head>
+<body>
+<main class="page"><article class="doc"><h1>Day 2 — Concept 7: Session-Based Authentication Notes</h1>
+
+
+<hr>
+
+
+<h1>What is Session-Based Authentication?</h1>
+
+
+<p>Session-based authentication is a stateful authentication mechanism where the server stores user session information and uses a unique Session ID to identify the user in future requests.</p>
+
+
+<hr>
+
+
+<h1>Core Idea</h1>
+
+
+<pre class="language-text"><code class="language-text">User Logs In
+      ↓
+Server Creates Session
+      ↓
+Session ID Generated
+      ↓
+Session ID Stored in Cookie
+      ↓
+Future Requests Send Cookie
+      ↓
+Server Finds Session
+      ↓
+User Authenticated</code></pre>
+
+<hr>
+
+
+<h1>What is a Session?</h1>
+
+
+<p>A session is server-side storage that maintains information about an authenticated user between requests.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-text"><code class="language-text">Session ID = ABC123
+
+User ID = 101
+Role = Student
+Logged In = True</code></pre>
+
+<hr>
+
+
+<h1>What is a Session ID?</h1>
+
+
+<p>A Session ID is a unique identifier generated by the server when a user successfully logs in.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-text"><code class="language-text">ABC123</code></pre>
+
+<p>The Session ID acts as a key to locate the user&#39;s session data.</p>
+
+
+<hr>
+
+
+<h1>What is Stored in the Cookie?</h1>
+
+
+<p>The browser stores:</p>
+
+
+<pre class="language-text"><code class="language-text">sessionId=ABC123</code></pre>
+
+<p>Only the Session ID is stored in the cookie.</p>
+
+
+<p>The actual user information remains on the server.</p>
+
+
+<hr>
+
+
+<h1>What is Stored on the Server?</h1>
+
+
+<pre class="language-text"><code class="language-text">ABC123
+      ↓
+User ID
+Role
+Permissions
+Login State</code></pre>
+
+<p>The server maintains all session data.</p>
+
+
+<hr>
+
+
+<h1>Authentication Flow</h1>
+
+
+<h2>Step 1</h2>
+
+
+<p>User Login:</p>
+
+
+<pre class="language-http"><code class="language-http">POST /login</code></pre>
+
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"email"</span><span class="token operator">:</span> <span class="token string">"santhosh@gmail.com"</span><span class="token punctuation">,</span>
+  <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"123456"</span>
+<span class="token punctuation">}</span></code></pre>
+
+<hr>
+
+
+<h2>Step 2</h2>
+
+
+<p>Server verifies credentials.</p>
+
+
+<hr>
+
+
+<h2>Step 3</h2>
+
+
+<p>Server creates a session.</p>
+
+
+<pre class="language-text"><code class="language-text">Session ID = ABC123</code></pre>
+
+<hr>
+
+
+<h2>Step 4</h2>
+
+
+<p>Session stored on server.</p>
+
+
+<pre class="language-text"><code class="language-text">ABC123 → User Data</code></pre>
+
+<hr>
+
+
+<h2>Step 5</h2>
+
+
+<p>Session ID sent as cookie.</p>
+
+
+<pre class="language-http"><code class="language-http">Set-Cookie:
+sessionId=ABC123</code></pre>
+
+<hr>
+
+
+<h2>Step 6</h2>
+
+
+<p>Browser stores cookie.</p>
+
+
+<hr>
+
+
+<h2>Step 7</h2>
+
+
+<p>Future requests send cookie automatically.</p>
+
+
+<pre class="language-http"><code class="language-http">Cookie:
+sessionId=ABC123</code></pre>
+
+<hr>
+
+
+<h2>Step 8</h2>
+
+
+<p>Server performs session lookup.</p>
+
+
+<pre class="language-text"><code class="language-text">ABC123
+      ↓
+User Found</code></pre>
+
+<p>User authenticated.</p>
+
+
+<hr>
+
+
+<h1>Why Session Authentication is Stateful</h1>
+
+
+<p>Session authentication is stateful because the server stores user-specific information between requests.</p>
+
+
+<pre class="language-text"><code class="language-text">Server Remembers User Data</code></pre>
+
+<p>Future requests depend on previously stored session data.</p>
+
+
+<hr>
+
+
+<h1>Browser vs Server Storage</h1>
+
+
+<h2>Browser</h2>
+
+
+<p>Stores:</p>
+
+
+<pre class="language-text"><code class="language-text">Session ID</code></pre>
+
+<hr>
+
+
+<h2>Server</h2>
+
+
+<p>Stores:</p>
+
+
+<pre class="language-text"><code class="language-text">User Information
+Role
+Permissions
+Login State</code></pre>
+
+<hr>
+
+
+<h1>Logout Flow</h1>
+
+
+<pre class="language-http"><code class="language-http">POST /logout</code></pre>
+
+<p>Server:</p>
+
+
+<pre class="language-text"><code class="language-text">Delete Session</code></pre>
+
+<p>Example:</p>
+
+
+<pre class="language-text"><code class="language-text">ABC123 → Removed</code></pre>
+
+<p>User becomes logged out immediately.</p>
+
+
+<hr>
+
+
+<h1>Load Balancer Problem</h1>
+
+
+<p>Imagine:</p>
+
+
+<pre class="language-text"><code class="language-text">Load Balancer
+      ↓
+Server A
+Server B</code></pre>
+
+<p>Session stored on:</p>
+
+
+<pre class="language-text"><code class="language-text">Server A</code></pre>
+
+<p>Next request goes to:</p>
+
+
+<pre class="language-text"><code class="language-text">Server B</code></pre>
+
+<p>Server B cannot find the session.</p>
+
+
+<p>User appears logged out.</p>
+
+
+<hr>
+
+
+<h1>Sticky Sessions</h1>
+
+
+<p>Sticky sessions ensure:</p>
+
+
+<pre class="language-text"><code class="language-text">User X
+      ↓
+Always Server A</code></pre>
+
+<p>All requests go to the same server.</p>
+
+
+<hr>
+
+
+<h1>Shared Session Store</h1>
+
+
+<p>Better solution:</p>
+
+
+<pre class="language-text"><code class="language-text">Load Balancer
+      ↓
+Server A
+Server B
+Server C
+      ↓
+Redis</code></pre>
+
+<p>All servers access the same session data.</p>
+
+
+<hr>
+
+
+<div class="callout callout-advantage"><div class="callout-title"><span class="callout-icon">✅</span><span>Advantages</span></div><div class="callout-body"><h3>Secure</h3>
+<p>Only Session ID is sent to the client.</p>
+<hr>
+<h3>Easy Logout</h3>
+<p>Deleting session immediately logs out the user.</p>
+<hr>
+<h3>Immediate Session Revocation</h3>
+<p>Server can invalidate sessions instantly.</p>
+<hr>
+</div></div>
+<div class="callout callout-disadvantage"><div class="callout-title"><span class="callout-icon">❌</span><span>Disadvantages</span></div><div class="callout-body"><h3>Server Memory Usage</h3>
+<p>Every logged-in user requires session storage.</p>
+<hr>
+<h3>Scaling Complexity</h3>
+<p>Multiple servers require:</p>
+<ul>
+<li>Sticky Sessions</li>
+<li>Shared Session Store</li>
+</ul>
+<hr>
+<h3>Stateful Architecture</h3>
+<p>Server must maintain session data.</p>
+<hr>
+</div></div>
+<h1>Session vs JWT</h1>
+
+
+<table>
+<thead>
+<tr>
+<th>Session</th>
+<th>JWT</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Stateful</td>
+<td>Stateless</td>
+</tr>
+<tr>
+<td>Server stores user data</td>
+<td>Client stores token</td>
+</tr>
+<tr>
+<td>Session lookup required</td>
+<td>No session lookup</td>
+</tr>
+<tr>
+<td>Easy logout</td>
+<td>Harder logout</td>
+</tr>
+<tr>
+<td>Harder scaling</td>
+<td>Easier scaling</td>
+</tr>
+</tbody></table>
+
+
+<hr>
+
+
+<h1>Key Technical Terms</h1>
+
+
+<ul>
+<li>Session</li>
+<li>Session ID</li>
+<li>Cookie</li>
+<li>Session Store</li>
+<li>Session Lookup</li>
+<li>Redis</li>
+<li>Sticky Sessions</li>
+<li>Stateful Authentication</li>
+<li>Load Balancer</li>
+<li>Session Revocation</li>
+</ul>
+
+
+<hr>
+
+
+<h1>30-Second Revision</h1>
+
+
+<blockquote>
+<p>Session-based authentication is a stateful authentication mechanism where the server stores user session information and associates it with a unique Session ID. The Session ID is stored in a browser cookie and sent with future requests. The server uses the Session ID to locate the corresponding session and authenticate the user.</p>
+</blockquote>
+
+
+<hr>
+
+
+<h1>Top 10 Interview Questions with Answers</h1>
+
+
+<hr>
+
+
+<h2>Q1. What is Session-Based Authentication?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>Session-based authentication is a stateful authentication mechanism where the server stores user session information and identifies users using a unique Session ID.</p>
+
+
+<hr>
+
+
+<h2>Q2. What is a Session?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>A session is server-side storage that maintains information about an authenticated user between requests.</p>
+
+
+<hr>
+
+
+<h2>Q3. What is a Session ID?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>A Session ID is a unique identifier generated by the server when a user logs in. It is used to locate the corresponding session data.</p>
+
+
+<hr>
+
+
+<h2>Q4. What is stored in the browser during session authentication?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>The browser stores only the Session ID inside a cookie. User information remains on the server.</p>
+
+
+<hr>
+
+
+<h2>Q5. What is stored on the server?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>The server stores session data such as User ID, role, permissions, and login state associated with a Session ID.</p>
+
+
+<hr>
+
+
+<h2>Q6. Why is Session Authentication Stateful?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>Session authentication is stateful because the server stores user-specific session information between requests and uses it for future authentication.</p>
+
+
+<hr>
+
+
+<h2>Q7. What happens when a user logs out?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>The server deletes the user&#39;s session data, making the Session ID invalid and immediately logging the user out.</p>
+
+
+<hr>
+
+
+<h2>Q8. What problem occurs in a load-balanced environment?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>If session data is stored on one server and the next request reaches a different server, that server may not find the session data, causing authentication issues.</p>
+
+
+<hr>
+
+
+<h2>Q9. What are Sticky Sessions?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>Sticky sessions ensure that all requests from a user are routed to the same server instance that stores the user&#39;s session data.</p>
+
+
+<hr>
+
+
+<h2>Q10. Why is Redis commonly used with Session Authentication?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>Redis is used as a centralized session store so that multiple server instances can access the same session data, improving scalability in distributed systems.</p>
+
+
+<hr>
+
+
+<h1>60-Second Interview Summary</h1>
+
+
+<blockquote>
+<p>Session-based authentication is a stateful authentication mechanism where the server stores user-specific session information and associates it with a unique Session ID. The Session ID is sent to the client through a cookie and included in future requests. The server performs a session lookup using the Session ID to authenticate the user. While session authentication provides easy logout and centralized session control, it introduces scaling challenges in load-balanced environments, which are commonly solved using sticky sessions or shared session stores such as Redis. 🚀</p>
+</blockquote>
+</article></main>
+</body>
+</html>
