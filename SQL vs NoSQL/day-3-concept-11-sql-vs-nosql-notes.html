@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Day 3 — Concept 11: SQL vs NoSQL Notes</title>
+<style>
+:root{color-scheme:light;--fg:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0284c7;--accent-soft:#e0f2fe;--card:#ffffff;--code-bg:#0f172a;--code-fg:#e2e8f0;}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(180deg,#e0f2fe 0%,#f0f9ff 60%,#ffffff 100%);color:var(--fg);min-height:100vh;padding:32px 16px;line-height:1.75;-webkit-font-smoothing:antialiased}
+.page{max-width:920px;margin:0 auto}
+.doc{background:var(--card);border-radius:18px;box-shadow:0 20px 60px -20px rgba(2,132,199,.25),0 4px 14px -4px rgba(15,23,42,.08);padding:clamp(24px,5vw,60px);border:1px solid rgba(148,163,184,.2)}
+.title-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;margin:0 0 1.2em;padding-bottom:.5em;border-bottom:1px solid var(--border)}
+.title-row h1{margin:0;padding:0;border:0;flex:1 1 auto;min-width:0}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600;text-decoration:none;border:1px solid rgba(2,132,199,.2);white-space:nowrap;transition:transform .15s ease,box-shadow .15s ease,background .15s ease;box-shadow:0 1px 2px rgba(2,132,199,.08);flex:0 0 auto;margin-left:auto;margin-right:8px}
+.badge:hover{background:#bae6fd;transform:translateY(-1px);box-shadow:0 6px 16px -6px rgba(2,132,199,.35)}
+h1,h2,h3,h4,h5,h6{font-weight:700;line-height:1.25;margin:1.8em 0 .6em;letter-spacing:-.01em}
+h1{font-size:2.15rem;border-bottom:1px solid var(--border);padding-bottom:.4em;margin-top:0}
+h2{font-size:1.6rem}
+h3{font-size:1.3rem}
+h4{font-size:1.1rem}
+p{margin:.9em 0}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+strong{font-weight:700}
+del{color:var(--muted)}
+ul,ol{margin:.8em 0;padding-left:1.6em}
+li{margin:.25em 0}
+blockquote{margin:1.2em 0;padding:.5em 1.1em;border-left:4px solid var(--accent);background:var(--accent-soft);color:#334155;border-radius:0 .5rem .5rem 0}
+hr{margin:2em 0;border:0;border-top:1px solid var(--border)}
+img{max-width:100%;border-radius:.5rem;margin:1em 0}
+code{font-family:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:.9em;padding:.15em .4em;background:#f1f5f9;color:#0c4a6e;border-radius:.35rem;border:1px solid var(--border)}
+pre{margin:1.2em 0;padding:1rem 1.1rem;background:var(--code-bg);color:var(--code-fg);border-radius:.7rem;overflow-x:auto;font-size:.9rem;line-height:1.55;border:1px solid #1e293b}
+pre code{background:transparent;border:0;padding:0;color:inherit;font-size:inherit}
+table{width:100%;border-collapse:separate;border-spacing:0;margin:1.2em 0;display:table;table-layout:auto;border:1px solid var(--border);border-radius:.6rem;overflow:hidden}
+thead{background:var(--accent-soft)}
+th,td{padding:.65em .9em;border-bottom:1px solid var(--border);text-align:left}
+th{font-weight:600}
+tr:last-child td{border-bottom:0}
+.callout{margin:1.5em 0;padding:1rem 1.1rem;border-radius:.8rem;border:1px solid var(--co-b,var(--border));background:var(--co-bg,#f8fafc);box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.callout-title{display:flex;align-items:center;gap:.55rem;font-weight:700;font-size:1rem;margin-bottom:.5rem;color:var(--co-fg,var(--fg))}
+.callout-icon{font-size:1.15rem;line-height:1}
+.callout-body>:first-child{margin-top:0}
+.callout-body>:last-child{margin-bottom:0}
+.callout-note{--co-bg:#eff6ff;--co-b:#bfdbfe;--co-fg:#1e40af}
+.callout-important{--co-bg:#faf5ff;--co-b:#e9d5ff;--co-fg:#6b21a8}
+.callout-warning{--co-bg:#fffbeb;--co-b:#fde68a;--co-fg:#92400e}
+.callout-tip{--co-bg:#ecfdf5;--co-b:#a7f3d0;--co-fg:#065f46}
+.callout-question{--co-bg:#ecfeff;--co-b:#a5f3fc;--co-fg:#155e75}
+.callout-observation{--co-bg:#f0fdfa;--co-b:#99f6e4;--co-fg:#115e59}
+.callout-complexity{--co-bg:#fef2f2;--co-b:#fecaca;--co-fg:#991b1b}
+.callout-summary{--co-bg:#eef2ff;--co-b:#c7d2fe;--co-fg:#3730a3}
+.callout-advantage{--co-bg:#ecfdf5;--co-b:#a7f3d0;--co-fg:#065f46}
+.callout-disadvantage{--co-bg:#fef2f2;--co-b:#fecaca;--co-fg:#991b1b}
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color:#94a3b8}
+.token.punctuation{color:#cbd5e1}
+.token.property,.token.tag,.token.constant,.token.symbol,.token.deleted{color:#fca5a5}
+.token.boolean,.token.number{color:#fdba74}
+.token.selector,.token.attr-name,.token.string,.token.char,.token.builtin,.token.inserted{color:#86efac}
+.token.operator,.token.entity,.token.url,.token.variable{color:#7dd3fc}
+.token.atrule,.token.attr-value,.token.function,.token.class-name{color:#f0abfc}
+.token.keyword{color:#c4b5fd}
+.token.regex,.token.important{color:#fcd34d}
+@media (max-width:640px){body{padding:12px 8px}.doc{padding:20px 16px;border-radius:12px}h1{font-size:1.7rem}.title-row{align-items:flex-start}.badge{font-size:12px;padding:5px 10px}}
+@media print{body{background:#fff;padding:0}.doc{box-shadow:none;border:0;padding:0;max-width:none}}
+</style>
+</head>
+<body>
+<main class="page"><article class="doc"><h1>Day 3 — Concept 11: SQL vs NoSQL Notes</h1>
+
+
+<h1>What is a Database?</h1>
+
+
+<p>A database is a system used to store, organize, retrieve, and manage data efficiently.</p>
+
+
+<p>Examples:</p>
+
+
+<pre class="language-text"><code class="language-text">Users
+Students
+Companies
+Applications
+Events
+Payments</code></pre>
+
+<hr>
+
+
+<h1>What is SQL?</h1>
+
+
+<p>SQL (Structured Query Language) databases are relational databases that store data in tables consisting of rows and columns.</p>
+
+
+<p>Examples:</p>
+
+
+<p>MySQL</p>
+
+
+<p>PostgreSQL</p>
+
+
+<p>Oracle Database</p>
+
+
+<hr>
+
+
+<h1>How SQL Stores Data</h1>
+
+
+<h3>Students Table</h3>
+
+
+<table>
+<thead>
+<tr>
+<th>studentId</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>101</td>
+<td>Santhosh</td>
+</tr>
+</tbody></table>
+
+
+<h3>Companies Table</h3>
+
+
+<table>
+<thead>
+<tr>
+<th>companyId</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Google</td>
+</tr>
+</tbody></table>
+
+
+<h3>Applications Table</h3>
+
+
+<table>
+<thead>
+<tr>
+<th>applicationId</th>
+<th>studentId</th>
+<th>companyId</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1001</td>
+<td>101</td>
+<td>1</td>
+</tr>
+</tbody></table>
+
+
+<hr>
+
+
+<h1>Why SQL is Called Relational</h1>
+
+
+<p>SQL databases support relationships between tables using:</p>
+
+
+<ul>
+<li>Primary Keys</li>
+<li>Foreign Keys</li>
+<li>Constraints</li>
+</ul>
+
+
+<p>Example:</p>
+
+
+<pre class="language-text"><code class="language-text">Student
+      ↓
+Application
+      ↓
+Company</code></pre>
+
+<p>The database itself understands and enforces these relationships.</p>
+
+
+<hr>
+
+
+<h1>SQL Characteristics</h1>
+
+
+<h3>Fixed Schema</h3>
+
+
+<p>Before storing data:</p>
+
+
+<pre class="language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> students<span class="token punctuation">(</span>
+   id <span class="token keyword">INT</span><span class="token punctuation">,</span>
+   name <span class="token keyword">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>Structure must be defined.</p>
+
+
+<hr>
+
+
+<h3>Strong Relationships</h3>
+
+
+<p>Supports:</p>
+
+
+<pre class="language-text"><code class="language-text">JOINs
+Foreign Keys
+Constraints</code></pre>
+
+<hr>
+
+
+<h3>Strong Consistency</h3>
+
+
+<p>Data integrity is prioritized.</p>
+
+
+<hr>
+
+
+<h3>Complex Queries</h3>
+
+
+<p>SQL excels at:</p>
+
+
+<pre class="language-text"><code class="language-text">Reports
+Analytics
+Multi-table Queries</code></pre>
+
+<hr>
+
+
+<h1>What is NoSQL?</h1>
+
+
+<p>NoSQL (Not Only SQL) databases are non-relational databases that store data in formats such as documents, key-value pairs, graphs, or wide-column structures.</p>
+
+
+<p>Examples:</p>
+
+
+<p>MongoDB</p>
+
+
+<p>Redis</p>
+
+
+<p>Apache Cassandra</p>
+
+
+<hr>
+
+
+<h1>How NoSQL Stores Data</h1>
+
+
+<p>Example Document:</p>
+
+
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+   <span class="token property">"name"</span><span class="token operator">:</span><span class="token string">"Santhosh"</span><span class="token punctuation">,</span>
+   <span class="token property">"department"</span><span class="token operator">:</span><span class="token string">"CSE"</span><span class="token punctuation">,</span>
+   <span class="token property">"skills"</span><span class="token operator">:</span><span class="token punctuation">[</span><span class="token string">"React"</span><span class="token punctuation">,</span><span class="token string">"Node.js"</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+
+<p>Data is stored as a document rather than rows and columns.</p>
+
+
+<hr>
+
+
+<h1>Flexible Schema</h1>
+
+
+<p>Document 1:</p>
+
+
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+   <span class="token property">"name"</span><span class="token operator">:</span><span class="token string">"Santhosh"</span>
+<span class="token punctuation">}</span></code></pre>
+
+<p>Document 2:</p>
+
+
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+   <span class="token property">"name"</span><span class="token operator">:</span><span class="token string">"Rahul"</span><span class="token punctuation">,</span>
+   <span class="token property">"phone"</span><span class="token operator">:</span><span class="token string">"9999999999"</span>
+<span class="token punctuation">}</span></code></pre>
+
+<p>Both are valid.</p>
+
+
+<hr>
+
+
+<h1>Important Clarification</h1>
+
+
+<p>Many beginners think:</p>
+
+
+<pre class="language-text"><code class="language-text">SQL = Schema
+NoSQL = No Schema</code></pre>
+
+<p>This is not entirely true.</p>
+
+
+<p>When using:</p>
+
+
+<pre class="language-js"><code class="language-js">mongoose<span class="token punctuation">.</span><span class="token function">Schema</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>the schema is enforced by:</p>
+
+
+<p>Mongoose</p>
+
+
+<p>not by MongoDB itself.</p>
+
+
+<hr>
+
+
+<h1>Mongoose Schema vs SQL Schema</h1>
+
+
+<h3>SQL</h3>
+
+
+<p>Database enforces schema.</p>
+
+
+<pre class="language-text"><code class="language-text">Database Level Validation</code></pre>
+
+<hr>
+
+
+<h3>MongoDB</h3>
+
+
+<p>Database allows flexible documents.</p>
+
+
+<p>Schema validation is optional.</p>
+
+
+<hr>
+
+
+<h3>Mongoose</h3>
+
+
+<p>Application layer enforces schema.</p>
+
+
+<pre class="language-text"><code class="language-text">Node.js
+   ↓
+Mongoose
+   ↓
+MongoDB</code></pre>
+
+<hr>
+
+
+<h1>SQL Relationships vs MongoDB References</h1>
+
+
+<p>MongoDB supports references.</p>
+
+
+<p>Example:</p>
+
+
+<pre class="language-js"><code class="language-js"><span class="token literal-property property">student</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+   <span class="token literal-property property">type</span><span class="token operator">:</span> ObjectId<span class="token punctuation">,</span>
+   <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token string">"Student"</span>
+<span class="token punctuation">}</span></code></pre>
+
+<p>So MongoDB can also model relationships.</p>
+
+
+<hr>
+
+
+<h1>The Real Difference</h1>
+
+
+<p>Many tutorials say:</p>
+
+
+<pre class="language-text"><code class="language-text">SQL → Has Relationships
+NoSQL → No Relationships</code></pre>
+
+<p>❌ Incorrect</p>
+
+
+<hr>
+
+
+<p>Correct understanding:</p>
+
+
+<h3>SQL</h3>
+
+
+<pre class="language-text"><code class="language-text">Database Manages Relationships</code></pre>
+
+<p>Using:</p>
+
+
+<ul>
+<li>Foreign Keys</li>
+<li>Constraints</li>
+<li>Referential Integrity</li>
+</ul>
+
+
+<hr>
+
+
+<h3>MongoDB</h3>
+
+
+<pre class="language-text"><code class="language-text">Application Manages Relationships</code></pre>
+
+<p>Using:</p>
+
+
+<ul>
+<li>References</li>
+<li>Populate</li>
+<li>Application Logic</li>
+</ul>
+
+
+<hr>
+
+
+<h1>Referential Integrity</h1>
+
+
+<p>SQL automatically protects relationships.</p>
+
+
+<p>Example:</p>
+
+
+<p>Student:</p>
+
+
+<pre class="language-text"><code class="language-text">studentId = 101</code></pre>
+
+<p>Application:</p>
+
+
+<pre class="language-text"><code class="language-text">studentId = 101</code></pre>
+
+<p>Delete Student 101:</p>
+
+
+<p>SQL can:</p>
+
+
+<pre class="language-text"><code class="language-text">Reject Delete
+Cascade Delete
+Set NULL</code></pre>
+
+<p>using constraints.</p>
+
+
+<hr>
+
+
+<p>MongoDB:</p>
+
+
+<pre class="language-text"><code class="language-text">Deletes Student</code></pre>
+
+<p>Application document still contains:</p>
+
+
+<pre class="language-text"><code class="language-text">studentId = 101</code></pre>
+
+<p>This creates:</p>
+
+
+<pre class="language-text"><code class="language-text">Dangling Reference</code></pre>
+
+<p>unless handled manually.</p>
+
+
+<hr>
+
+
+<h1>Embedding vs Referencing</h1>
+
+
+<p>MongoDB prefers:</p>
+
+
+<h2>Embedding</h2>
+
+
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+   <span class="token property">"clubName"</span><span class="token operator">:</span><span class="token string">"Coding Club"</span><span class="token punctuation">,</span>
+   <span class="token property">"events"</span><span class="token operator">:</span><span class="token punctuation">[</span>
+      <span class="token punctuation">{</span>
+         <span class="token property">"name"</span><span class="token operator">:</span><span class="token string">"Hackathon"</span>
+      <span class="token punctuation">}</span>
+   <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+
+<p>Store related data together.</p>
+
+
+<hr>
+
+
+<p>SQL prefers:</p>
+
+
+<pre class="language-text"><code class="language-text">Club Table
+Event Table
+Foreign Key</code></pre>
+
+<p>This is called normalization.</p>
+
+
+<hr>
+
+
+<h1>SQL vs NoSQL Comparison</h1>
+
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>NoSQL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Relational</td>
+<td>Non-Relational</td>
+</tr>
+<tr>
+<td>Tables</td>
+<td>Documents</td>
+</tr>
+<tr>
+<td>Fixed Schema</td>
+<td>Flexible Schema</td>
+</tr>
+<tr>
+<td>Strong Consistency</td>
+<td>High Scalability</td>
+</tr>
+<tr>
+<td>Database Manages Relationships</td>
+<td>Application Manages Relationships</td>
+</tr>
+<tr>
+<td>JOINs</td>
+<td>Embedding / References</td>
+</tr>
+<tr>
+<td>Normalization</td>
+<td>Embedding</td>
+</tr>
+<tr>
+<td>Traditionally Vertical Scaling</td>
+<td>Designed for Horizontal Scaling</td>
+</tr>
+</tbody></table>
+
+
+<hr>
+
+
+<h1>When to Use SQL</h1>
+
+
+<p>Choose SQL when:</p>
+
+
+<p>✅ Strong relationships exist</p>
+
+
+<p>✅ Data integrity is critical</p>
+
+
+<p>✅ Transactions are important</p>
+
+
+<p>✅ Complex reporting is needed</p>
+
+
+<p>Examples:</p>
+
+
+<ul>
+<li>Banking</li>
+<li>Payment Systems</li>
+<li>ERP Systems</li>
+<li>Placement Management Systems</li>
+</ul>
+
+
+<hr>
+
+
+<h1>When to Use NoSQL</h1>
+
+
+<p>Choose NoSQL when:</p>
+
+
+<p>✅ Flexible data structure</p>
+
+
+<p>✅ Massive scale</p>
+
+
+<p>✅ High write throughput</p>
+
+
+<p>✅ Rapid schema evolution</p>
+
+
+<p>Examples:</p>
+
+
+<ul>
+<li>Social Media</li>
+<li>Activity Logs</li>
+<li>Analytics Systems</li>
+<li>Content Platforms</li>
+</ul>
+
+
+<hr>
+
+
+<h1>Placement Management System Database Choice</h1>
+
+
+<p>Recommended:</p>
+
+
+<p>PostgreSQL</p>
+
+
+<p>or</p>
+
+
+<p>MySQL</p>
+
+
+<p>Reason:</p>
+
+
+<pre class="language-text"><code class="language-text">Student
+      ↓
+Application
+      ↓
+Company
+      ↓
+Drive</code></pre>
+
+<p>Strong relationships and reporting requirements.</p>
+
+
+<hr>
+
+
+<h1>Key Technical Terms</h1>
+
+
+<ul>
+<li>Relational Database</li>
+<li>Non-Relational Database</li>
+<li>Schema</li>
+<li>Foreign Key</li>
+<li>Primary Key</li>
+<li>Referential Integrity</li>
+<li>Normalization</li>
+<li>Embedding</li>
+<li>References</li>
+<li>Document Database</li>
+<li>Horizontal Scaling</li>
+<li>Vertical Scaling</li>
+<li>Data Integrity</li>
+</ul>
+
+
+<hr>
+
+
+<h1>Quick Revision</h1>
+
+
+<h3>SQL</h3>
+
+
+<pre class="language-text"><code class="language-text">Tables
+Relationships
+Constraints
+Consistency</code></pre>
+
+<hr>
+
+
+<h3>NoSQL</h3>
+
+
+<pre class="language-text"><code class="language-text">Documents
+Flexibility
+Scalability
+Embedding</code></pre>
+
+<hr>
+
+
+<h3>Most Important Difference</h3>
+
+
+<pre class="language-text"><code class="language-text">SQL:
+Database manages relationships
+
+MongoDB:
+Application manages relationships</code></pre>
+
+<hr>
+
+
+<h1>Top 10 Interview Questions with Answers</h1>
+
+
+<hr>
+
+
+<h2>Q1. What is the difference between SQL and NoSQL databases?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>SQL databases are relational databases that store data in tables with predefined schemas and support relationships using keys and constraints. NoSQL databases are non-relational databases that store data in formats such as documents and provide flexible schemas designed for scalability.</p>
+
+
+<hr>
+
+
+<h2>Q2. Why are SQL databases called relational databases?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>SQL databases are called relational databases because they manage relationships between tables using primary keys, foreign keys, and constraints.</p>
+
+
+<hr>
+
+
+<h2>Q3. What is a schema?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>A schema is the blueprint of a database that defines the structure of data, including fields, data types, and constraints.</p>
+
+
+<hr>
+
+
+<h2>Q4. Why is MongoDB considered flexible?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>MongoDB allows documents to have different structures and fields without requiring a predefined database schema, making it suitable for evolving data models.</p>
+
+
+<hr>
+
+
+<h2>Q5. Does MongoDB support relationships?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>Yes. MongoDB supports relationships using document references and ObjectIds. However, these relationships are managed by the application rather than enforced by the database.</p>
+
+
+<hr>
+
+
+<h2>Q6. What is the difference between a Foreign Key and a MongoDB Reference?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>A Foreign Key is enforced by the SQL database and maintains referential integrity. A MongoDB reference is an application-level link between documents and is not automatically enforced by MongoDB.</p>
+
+
+<hr>
+
+
+<h2>Q7. What is Referential Integrity?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>Referential integrity ensures that relationships between records remain valid. SQL databases enforce referential integrity using foreign key constraints.</p>
+
+
+<hr>
+
+
+<h2>Q8. What is a Dangling Reference?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>A dangling reference occurs when a MongoDB document references another document that has already been deleted, resulting in an invalid relationship.</p>
+
+
+<hr>
+
+
+<h2>Q9. Why would you choose SQL for a Placement Management System?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>A Placement Management System contains strongly related entities such as students, companies, applications, and job drives. SQL databases provide data integrity, relationships, transactions, and efficient reporting capabilities.</p>
+
+
+<hr>
+
+
+<h2>Q10. Which is better: SQL or NoSQL?</h2>
+
+
+<h3>Answer</h3>
+
+
+<p>Neither is universally better. The choice depends on application requirements such as relationships, consistency, scalability, query patterns, and schema flexibility.</p>
+
+
+<hr>
+
+
+<h1>60-Second Interview Summary</h1>
+
+
+<blockquote>
+<p>SQL databases are relational databases that store data in tables and manage relationships through foreign keys, constraints, and referential integrity. NoSQL databases are document-oriented or non-relational databases designed for flexibility and scalability. While MongoDB can model relationships using references, relationship management is handled by the application rather than enforced by the database. SQL is generally preferred for systems requiring strong consistency and complex relationships, while NoSQL is often chosen for flexible and large-scale data workloads. 🚀</p>
+</blockquote>
+
+
+<p>✅ Concept 11 Completed. Next: <strong>Concept 12 — Indexes and How They Speed Up Queries</strong>. This is one of the most frequently asked database performance topics in backend interviews.</p>
+</article></main>
+</body>
+</html>
