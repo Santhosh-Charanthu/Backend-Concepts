@@ -37,28 +37,39 @@ thead{background:var(--accent-soft)}
 th,td{padding:.65em .9em;border-bottom:1px solid var(--border);text-align:left}
 th{font-weight:600}
 tr:last-child td{border-bottom:0}
-.callout{margin:1.5em 0;padding:1rem 1.1rem;border-radius:.8rem;border:1px solid var(--co-b,var(--border));background:var(--co-bg,#f8fafc);box-shadow:0 1px 2px rgba(15,23,42,.04)}
-.callout-title{display:flex;align-items:center;gap:.55rem;font-weight:700;font-size:1rem;margin-bottom:.5rem;color:var(--co-fg,var(--fg))}
+.callout{margin:1.5em 0;padding:1rem 1.1rem;border-radius:.8rem;border:1px solid var(--callout-border,#e2e8f0);background:var(--callout-bg,#f8fafc);box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.callout-title{display:flex;align-items:center;gap:.55rem;font-weight:700;font-size:1rem;margin-bottom:.5rem;color:var(--callout-fg,#0f172a)}
 .callout-icon{font-size:1.15rem;line-height:1}
 .callout-body>:first-child{margin-top:0}
 .callout-body>:last-child{margin-bottom:0}
-.callout-note{--co-bg:#eff6ff;--co-b:#bfdbfe;--co-fg:#1e40af}
-.callout-important{--co-bg:#faf5ff;--co-b:#e9d5ff;--co-fg:#6b21a8}
-.callout-warning{--co-bg:#fffbeb;--co-b:#fde68a;--co-fg:#92400e}
-.callout-tip{--co-bg:#ecfdf5;--co-b:#a7f3d0;--co-fg:#065f46}
-.callout-question{--co-bg:#ecfeff;--co-b:#a5f3fc;--co-fg:#155e75}
-.callout-observation{--co-bg:#f0fdfa;--co-b:#99f6e4;--co-fg:#115e59}
-.callout-complexity{--co-bg:#fef2f2;--co-b:#fecaca;--co-fg:#991b1b}
-.callout-summary{--co-bg:#eef2ff;--co-b:#c7d2fe;--co-fg:#3730a3}
-.callout-advantage{--co-bg:#ecfdf5;--co-b:#a7f3d0;--co-fg:#065f46}
-.callout-disadvantage{--co-bg:#fef2f2;--co-b:#fecaca;--co-fg:#991b1b}
-.callout-blue{--co-bg:#eff6ff;--co-b:#bfdbfe;--co-fg:#1e40af}
-.callout-green{--co-bg:#ecfdf5;--co-b:#a7f3d0;--co-fg:#065f46}
-.callout-red{--co-bg:#fef2f2;--co-b:#fecaca;--co-fg:#991b1b}
-.callout-yellow{--co-bg:#fffbeb;--co-b:#fde68a;--co-fg:#92400e}
-.callout-orange{--co-bg:#fff7ed;--co-b:#fed7aa;--co-fg:#9a3412}
-.callout-purple{--co-bg:#faf5ff;--co-b:#e9d5ff;--co-fg:#6b21a8}
-.callout-gray{--co-bg:#f8fafc;--co-b:#e2e8f0;--co-fg:#475569}
+.callout-note{--callout-bg:color-mix(in oklab,oklch(0.65 0.16 240) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.65 0.16 240) 40%,transparent);--callout-fg:oklch(0.4 0.15 240)}
+.callout-important{--callout-bg:color-mix(in oklab,oklch(0.65 0.22 300) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.65 0.22 300) 40%,transparent);--callout-fg:oklch(0.42 0.2 300)}
+.callout-warning{--callout-bg:color-mix(in oklab,oklch(0.75 0.17 70) 15%,transparent);--callout-border:color-mix(in oklab,oklch(0.75 0.17 70) 45%,transparent);--callout-fg:oklch(0.45 0.18 60)}
+.callout-tip{--callout-bg:color-mix(in oklab,oklch(0.72 0.18 155) 12%,transparent);--callout-border:color-mix(in oklab,oklch(0.72 0.18 155) 40%,transparent);--callout-fg:oklch(0.4 0.15 155)}
+.callout-question{--callout-bg:color-mix(in oklab,oklch(0.7 0.18 200) 12%,transparent);--callout-border:color-mix(in oklab,oklch(0.7 0.18 200) 40%,transparent);--callout-fg:oklch(0.4 0.15 200)}
+.callout-observation{--callout-bg:color-mix(in oklab,oklch(0.7 0.15 180) 12%,transparent);--callout-border:color-mix(in oklab,oklch(0.7 0.15 180) 40%,transparent);--callout-fg:oklch(0.4 0.13 180)}
+.callout-complexity{--callout-bg:color-mix(in oklab,oklch(0.7 0.15 25) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.7 0.15 25) 40%,transparent);--callout-fg:oklch(0.44 0.16 25)}
+.callout-summary{--callout-bg:color-mix(in oklab,oklch(0.65 0.14 260) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.65 0.14 260) 40%,transparent);--callout-fg:oklch(0.4 0.13 260)}
+.callout-advantage{--callout-bg:color-mix(in oklab,oklch(0.72 0.18 155) 12%,transparent);--callout-border:color-mix(in oklab,oklch(0.72 0.18 155) 40%,transparent);--callout-fg:oklch(0.4 0.15 155)}
+.callout-disadvantage{--callout-bg:color-mix(in oklab,oklch(0.7 0.2 20) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.7 0.2 20) 40%,transparent);--callout-fg:oklch(0.45 0.19 20)}
+.callout-blue{--callout-bg:color-mix(in oklab,oklch(0.65 0.16 240) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.65 0.16 240) 40%,transparent);--callout-fg:oklch(0.4 0.15 240)}
+.callout-green{--callout-bg:color-mix(in oklab,oklch(0.72 0.18 155) 12%,transparent);--callout-border:color-mix(in oklab,oklch(0.72 0.18 155) 40%,transparent);--callout-fg:oklch(0.4 0.15 155)}
+.callout-red{--callout-bg:color-mix(in oklab,oklch(0.65 0.22 20) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.65 0.22 20) 45%,transparent);--callout-fg:oklch(0.42 0.2 20)}
+.callout-yellow{--callout-bg:color-mix(in oklab,oklch(0.82 0.18 90) 15%,transparent);--callout-border:color-mix(in oklab,oklch(0.82 0.18 90) 45%,transparent);--callout-fg:oklch(0.45 0.16 80)}
+.callout-orange{--callout-bg:color-mix(in oklab,oklch(0.75 0.18 55) 12%,transparent);--callout-border:color-mix(in oklab,oklch(0.75 0.18 55) 45%,transparent);--callout-fg:oklch(0.44 0.17 45)}
+.callout-purple{--callout-bg:color-mix(in oklab,oklch(0.65 0.2 310) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.65 0.2 310) 40%,transparent);--callout-fg:oklch(0.42 0.18 310)}
+.callout-gray{--callout-bg:color-mix(in oklab,oklch(0.6 0.01 250) 12%,transparent);--callout-border:color-mix(in oklab,oklch(0.6 0.01 250) 40%,transparent);--callout-fg:oklch(0.4 0.02 250)}
+.callout-teal{--callout-bg:color-mix(in oklab,oklch(0.68 0.15 185) 11%,transparent);--callout-border:color-mix(in oklab,oklch(0.68 0.15 185) 40%,transparent);--callout-fg:oklch(0.38 0.13 185)}
+.callout-cyan{--callout-bg:color-mix(in oklab,oklch(0.72 0.14 210) 12%,transparent);--callout-border:color-mix(in oklab,oklch(0.72 0.14 210) 42%,transparent);--callout-fg:oklch(0.38 0.12 210)}
+.callout-pink{--callout-bg:color-mix(in oklab,oklch(0.72 0.2 350) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.72 0.2 350) 40%,transparent);--callout-fg:oklch(0.42 0.18 350)}
+.callout-rose{--callout-bg:color-mix(in oklab,oklch(0.67 0.22 5) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.67 0.22 5) 42%,transparent);--callout-fg:oklch(0.42 0.2 5)}
+.callout-indigo{--callout-bg:color-mix(in oklab,oklch(0.6 0.2 270) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.6 0.2 270) 40%,transparent);--callout-fg:oklch(0.4 0.18 270)}
+.callout-violet{--callout-bg:color-mix(in oklab,oklch(0.63 0.22 295) 10%,transparent);--callout-border:color-mix(in oklab,oklch(0.63 0.22 295) 40%,transparent);--callout-fg:oklch(0.4 0.2 295)}
+.callout-lime{--callout-bg:color-mix(in oklab,oklch(0.78 0.2 125) 12%,transparent);--callout-border:color-mix(in oklab,oklch(0.78 0.2 125) 42%,transparent);--callout-fg:oklch(0.4 0.16 125)}
+.callout-amber{--callout-bg:color-mix(in oklab,oklch(0.8 0.18 75) 14%,transparent);--callout-border:color-mix(in oklab,oklch(0.8 0.18 75) 45%,transparent);--callout-fg:oklch(0.44 0.16 65)}
+.callout-sky{--callout-bg:color-mix(in oklab,oklch(0.7 0.15 225) 11%,transparent);--callout-border:color-mix(in oklab,oklch(0.7 0.15 225) 40%,transparent);--callout-fg:oklch(0.38 0.14 225)}
+.callout-slate{--callout-bg:color-mix(in oklab,oklch(0.58 0.04 240) 12%,transparent);--callout-border:color-mix(in oklab,oklch(0.58 0.04 240) 40%,transparent);--callout-fg:oklch(0.36 0.04 240)}
+.callout-peach{--callout-bg:color-mix(in oklab,#ffb5b5 18%,transparent);--callout-border:color-mix(in oklab,#ffb5b5 50%,transparent);--callout-fg:oklch(0.42 0.14 15)}
 .token.comment,.token.prolog,.token.doctype,.token.cdata{color:#94a3b8}
 .token.punctuation{color:#cbd5e1}
 .token.property,.token.tag,.token.constant,.token.symbol,.token.deleted{color:#fca5a5}
@@ -77,6 +88,7 @@ tr:last-child td{border-bottom:0}
 
 
 <h2>Atomicity</h2>
+
 
 <div class="callout callout-teal" data-fence-callout="teal"><div class="callout-body"><p>Atomicity means that a database transaction is treated as a single indivisible unit of work. Either all operations in the transaction are successfully completed and committed, or if any operation fails, the entire transaction is rolled back. For example, in a bank transfer, debiting the sender and crediting the receiver must happen together. We should never end up with the money deducted from one account but not credited to the other.</p>
 </div></div>
@@ -175,7 +187,6 @@ Phantom         → depends on DB/implementation</code></pre>
 
 
 <div class="callout callout-peach" data-fence-callout="peach"><div class="callout-body"><p>Isolation ensures that concurrent transactions do not improperly interfere with each other. Each transaction should operate without being affected by the intermediate state of other transactions. For example, if one transaction updates an account balance but hasn&#39;t committed yet, another transaction should not incorrectly read that uncommitted value. Databases provide different isolation levels, such as Read Uncommitted, Read Committed, Repeatable Read, and Serializable, which provide different guarantees against problems like dirty reads, non-repeatable reads, and phantom reads.</p>
-</div></div>
-</article></main>
+</div></div></article></main>
 </body>
 </html>
